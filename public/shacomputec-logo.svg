@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 170" width="480" height="170" role="img" aria-label="shacomputec — Hard Works Never Fail">
+  <!-- solid vivid blue badge -->
+  <rect width="480" height="170" rx="26" fill="#0080ff"/>
+
+  <!-- handshake forming a heart (white) -->
+  <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- left hand / heart lobe -->
+    <path d="M212 64 C202 55 189 49 185 57 C182 63 186 72 196 76 L222 89 C229 92 235 87 232 80 Z"/>
+    <!-- right hand / heart lobe -->
+    <path d="M248 64 C258 55 271 49 275 57 C278 63 274 72 264 76 L238 89 C231 92 225 87 228 80 Z"/>
+    <!-- clasped palms meeting at the centre -->
+    <path d="M232 88 C236 92 240 94 240 94 C240 94 244 92 248 88"/>
+    <!-- finger lines, left hand -->
+    <path d="M197 51 L205 57"/>
+    <path d="M192 61 L201 65"/>
+    <!-- finger lines, right hand -->
+    <path d="M263 51 L255 57"/>
+    <path d="M268 61 L259 65"/>
+  </g>
+
+  <!-- double divider lines -->
+  <line x1="150" y1="108" x2="330" y2="108" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+  <line x1="150" y1="116" x2="330" y2="116" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+
+  <!-- wordmark -->
+  <text x="240" y="140" text-anchor="middle" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="30" font-weight="600" letter-spacing="9" fill="#ffffff">shacomputec</text>
+
+  <!-- tagline -->
+  <text x="240" y="160" text-anchor="middle" font-family="'Arial Black', 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="2.5" fill="#ffffff">Hard Works Never Fail</text>
+</svg>

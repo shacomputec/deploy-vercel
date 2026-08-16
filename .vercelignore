@@ -1,0 +1,29 @@
+# ── Vercel upload exclusions ─────────────────────────────────────────────
+# `vercel` (CLI) uploads only the files below. GitHub imports use .gitignore
+# instead. Keep these two files in sync.
+
+# dependencies & build output
+node_modules/
+.next/
+out/
+build/
+tsconfig.tsbuildinfo
+
+# secrets & local databases
+.env
+.env.local
+.env.*.local
+prisma/*.db
+prisma/*.db-journal
+prisma/data/
+backups/
+
+# desktop & mobile release binaries (multi-hundred-MB installers/APKs —
+# served from the school's local server, NOT from the cloud site)
+public/desktop/
+public/mobile/
+desktop/artifacts/
+
+# tooling / scratch
+.freebuff/
+release/
