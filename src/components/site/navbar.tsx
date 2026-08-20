@@ -28,6 +28,7 @@ const NAV: NavItem[] = [
   },
   { href: "/programmes", label: "nav.programmes" },
   { href: "/news", label: "nav.news" },
+  { href: "/blog", label: "nav.blog" },
   { href: "/events", label: "nav.events" },
   { href: "/admissions", label: "nav.admissions" },
   { href: "/buy", label: "nav.buy" },

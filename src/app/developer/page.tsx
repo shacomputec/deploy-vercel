@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WhatsAppChatbot } from "@/components/site/whatsapp-chatbot";
 import {
   Mail, Phone, MessageCircle, Globe, ArrowRight, Play,
   CheckCircle2, Building2, Star, Sparkles, Wallet, Shield,
@@ -545,6 +546,8 @@ export default function DeveloperPage() {
           </div>
         </div>
       </section>
+      {/* WhatsApp Chatbot */}
+      <WhatsAppChatbot />
     </div>
   );
 }

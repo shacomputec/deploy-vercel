@@ -24,6 +24,7 @@ export type UiKey =
   | "nav.downloads"
   | "nav.contact"
   | "nav.developer"
+  | "nav.blog"
   | "nav.payFees"
   | "nav.resultChecker"
   | "nav.adminPortal"
@@ -96,6 +97,7 @@ const en: Dict = {
   "nav.downloads": "Downloads",
   "nav.contact": "Contact",
   "nav.developer": "Developer",
+  "nav.blog": "Blog",
   "nav.payFees": "Pay Fees",
   "nav.resultChecker": "Result Checker",
   "nav.adminPortal": "Admin Portal",
