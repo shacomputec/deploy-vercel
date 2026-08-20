@@ -1,21 +1,51 @@
 import { z } from "zod";
 
+// Ghana phone numbers are 10 digits (e.g. 0241234567). The +233 international
+// form (which represents the same number) is accepted and normalized. Spaces,
+// dashes, dots and brackets are stripped before validating.
+const GH_PHONE = /^(0\d{9}|\+?233\d{9})$/;
+
 export const ghPhone = z
   .string()
-  .trim()
-  .min(9, "Enter a valid phone number")
-  .max(15, "Enter a valid phone number")
-  .regex(/^\+?[0-9 -]{9,14}$/, "Enter a valid Ghana phone number");
+  .transform((v) => v.trim().replace(/[\s\-().]/g, ""))
+  .refine((v) => GH_PHONE.test(v), "Enter a valid 10-digit Ghana phone number (e.g. 0241234567)");
+
+/** Optional phone — accepts empty string / null, validates when filled. */
+export const ghPhoneOptional = z.union([z.literal(""), z.null(), ghPhone]).optional();
+
+// Ghana Card numbers follow the official GHA format: the GHA- country prefix,
+// 9 system-generated digits and a 1-digit check digit, separated by hyphens
+// (GHA-XXXXXXXXX-X). "GHA123…" is normalized to "GHA-123…"; input is uppercased.
+const GHANA_CARD = /^GHA-\d{9}-\d{1}$/;
+
+export const ghanaCard = z
+  .string()
+  .transform((v) => v.trim().toUpperCase().replace(/^GHA-?/, "GHA-"))
+  .refine((v) => GHANA_CARD.test(v), "Ghana Card must be GHA- followed by 9 digits and a check digit (e.g. GHA-123456789-0)");
+
+/** Optional Ghana Card — accepts empty string / null, validates when filled. */
+export const ghanaCardOptional = z.union([z.literal(""), z.null(), ghanaCard]).optional();
+
+// NHIS numbers are exactly 9 numeric digits (e.g. 123456789).
+const NHIS_NUMBER = /^\d{9}$/;
+
+export const nhisNumber = z
+  .string()
+  .transform((v) => v.trim().replace(/[\s\-.]/g, ""))
+  .refine((v) => NHIS_NUMBER.test(v), "NHIS number must be exactly 9 digits (e.g. 123456789)");
+
+/** Optional NHIS — accepts empty string / null, validates when filled. */
+export const nhisNumberOptional = z.union([z.literal(""), z.null(), nhisNumber]).optional();
 
 export const studentSchema = z.object({
   fullName: z.string().trim().min(3, "Full name is required"),
   gender: z.enum(["MALE", "FEMALE"]),
   dateOfBirth: z.string().optional().nullable(),
   classId: z.string().optional().nullable(),
-  phone: z.string().trim().optional().nullable(),
+  phone: ghPhoneOptional,
   email: z.string().email("Invalid email").optional().nullable().or(z.literal("")),
-  ghanaCard: z.string().optional().nullable(),
-  nhisNumber: z.string().optional().nullable(),
+  ghanaCard: ghanaCardOptional,
+  nhisNumber: nhisNumberOptional,
   address: z.string().optional().nullable(),
   hometown: z.string().optional().nullable(),
   district: z.string().optional().nullable(),
@@ -26,19 +56,19 @@ export const studentSchema = z.object({
 
 export const parentSchema = z.object({
   fullName: z.string().trim().min(3, "Parent name is required"),
-  phone: z.string().trim().min(9, "Phone is required"),
+  phone: ghPhone,
   email: z.string().email("Invalid email").optional().nullable().or(z.literal("")),
   occupation: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
   relationship: z.string().optional().nullable(),
-  ghanaCard: z.string().optional().nullable(),
+  ghanaCard: ghanaCardOptional,
 });
 
 export const teacherSchema = z.object({
   staffId: z.string().trim().min(2, "Staff ID is required"),
   fullName: z.string().trim().min(3, "Full name is required"),
   gender: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  phone: ghPhoneOptional,
   email: z.string().email("Invalid email").optional().nullable().or(z.literal("")),
   mainSubject: z.string().optional().nullable(),
   rank: z.string().optional().nullable(),
@@ -65,8 +95,8 @@ export const teacherSchema = z.object({
   hometown: z.string().optional().nullable(),
   district: z.string().optional().nullable(),
   region: z.string().optional().nullable(),
-  ghanaCard: z.string().optional().nullable(),
-  emergencyContact: z.string().optional().nullable(),
+  ghanaCard: ghanaCardOptional,
+  emergencyContact: ghPhoneOptional,
   association: z.string().optional().nullable(),
   religion: z.string().optional().nullable(),
   maritalStatus: z.string().optional().nullable(),
@@ -80,7 +110,7 @@ export const staffSchema = z.object({
   staffId: z.string().trim().min(2, "Staff ID is required"),
   fullName: z.string().trim().min(3, "Full name is required"),
   gender: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  phone: ghPhoneOptional,
   email: z.string().email("Invalid email").optional().nullable().or(z.literal("")),
   department: z.string().optional().nullable(),
   designation: z.string().optional().nullable(),
@@ -108,12 +138,12 @@ export const paymentSchema = z.object({
 
 export const otpRequestSchema = z.object({
   admissionNo: z.string().trim().min(3, "Enter the admission / index number"),
-  phone: z.string().trim().min(9, "Enter the registered phone number"),
+  phone: ghPhone,
 });
 
 export const otpVerifySchema = z.object({
   admissionNo: z.string().trim().min(3, "Enter the admission / index number"),
-  phone: z.string().trim().min(9, "Enter the registered phone number"),
+  phone: ghPhone,
   code: z.string().trim().length(6, "OTP must be 6 digits").regex(/^\d{6}$/, "OTP must be 6 digits"),
   requestId: z.string().min(1, "Invalid request"),
 });
@@ -127,12 +157,12 @@ export const admissionSchema = z.object({
   // for schools that haven't created their classes yet.
   classId: z.string().optional().nullable(),
   levelId: z.string().min(1, "Select the class level"),
-  nhisNumber: z.string().optional().nullable(),
+  nhisNumber: nhisNumberOptional,
   weighingCardNumber: z.string().optional().nullable(),
   previousSchool: z.string().optional().nullable(),
   previousSchoolClass: z.string().optional().nullable(),
   parentName: z.string().trim().min(3, "Parent/guardian name is required"),
-  parentPhone: z.string().trim().min(9, "Parent phone is required"),
+  parentPhone: ghPhone,
   parentEmail: z.string().email("Invalid email").optional().nullable().or(z.literal("")),
   parentOccupation: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
@@ -143,7 +173,7 @@ export const admissionSchema = z.object({
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Your name is required"),
   email: z.string().email("Invalid email"),
-  phone: z.string().optional().nullable(),
+  phone: ghPhoneOptional,
   subject: z.string().trim().min(2, "Subject is required"),
   message: z.string().trim().min(5, "Message is required"),
 });
@@ -168,7 +198,7 @@ export const userSchema = z.object({
     .transform((v) => (v ? v.toLowerCase() : null)),
   password: z.string().min(8, "Password must be at least 8 characters").optional(),
   roleId: z.string().min(1, "Select a role"),
-  phone: z.string().optional().nullable(),
+  phone: ghPhoneOptional,
   status: z.string().optional(),
 });
 
@@ -244,7 +274,7 @@ export const schoolSchema = z.object({
   logo: z.string().optional().nullable(),
   primaryColor: z.string().optional().nullable(),
   accentColor: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
+  phone: ghPhoneOptional,
   email: z.string().email("Invalid email").optional().nullable().or(z.literal("")),
   address: z.string().optional().nullable(),
   district: z.string().optional().nullable(),
@@ -255,10 +285,10 @@ export const schoolSchema = z.object({
   facebook: z.string().optional().nullable(),
   twitter: z.string().optional().nullable(),
   instagram: z.string().optional().nullable(),
-  whatsapp: z.string().optional().nullable(),
+  whatsapp: ghPhoneOptional,
   youtube: z.string().optional().nullable(),
   developerName: z.string().optional().nullable(),
-  developerPhone: z.string().optional().nullable(),
+  developerPhone: ghPhoneOptional,
   developerEmail: z.string().email("Invalid developer email").optional().nullable().or(z.literal("")),
 });
 

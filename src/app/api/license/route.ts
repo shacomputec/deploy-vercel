@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { handle, ApiError, ok, readJson, rateLimit } from "@/lib/api";
+import { setSetting } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { requirePerm } from "@/lib/permissions";
 import { auditLog } from "@/lib/audit";
-import { getLicenseStatus, getLicenseConfig, validateLicenseKey, generateLicenseKey, isKeyRevoked } from "@/lib/license";
+import { getLicenseStatus, getLicenseConfig, validateLicenseKey, generateLicenseKey, isKeyRevoked, getThisSchoolCode } from "@/lib/license";
 
 export const GET = handle(async () => {
   // Any authenticated user may see their license STATUS and the BUYER-SAFE
@@ -77,24 +78,42 @@ export const POST = handle(async (req) => {
 
   const existing = await prisma.license.findFirst({ orderBy: { createdAt: "desc" } });
   const key = body.licenseKey.trim().toUpperCase();
-  const schoolId = (check.schoolId || "MAIN").toUpperCase();
+  const keySchool = (check.schoolId || "MAIN").toUpperCase();
+
+  // School binding: a key minted for school “ABC” must not activate an
+  // installation registered as “XYZ”. The first activation stamps this
+  // installation's license code; every key afterwards must match it.
+  const thisCode = await getThisSchoolCode();
+  if (thisCode !== "MAIN" && thisCode !== keySchool) {
+    throw new ApiError(
+      `This license key was issued for school “${keySchool}” but this installation is registered as “${thisCode}”. Contact the developer for the correct key.`,
+      403
+    );
+  }
+
+  // The key's DAYS become the subscription period (activatedAt + days).
+  // getLicenseStatus() hard-locks the install once this passes — even offline.
+  const days = Math.max(1, Math.min(3650, Math.floor(check.days ?? 365)));
+  const endsAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
   if (existing) {
     await prisma.license.update({
       where: { id: existing.id },
-      data: { licenseKey: key, schoolId, status: "ACTIVE", activatedAt: new Date(), rollbackSuspected: false, notes: `Activated with key (school ${check.schoolId})` },
+      data: { licenseKey: key, schoolId: keySchool, status: "ACTIVE", activatedAt: new Date(), trialEndsAt: endsAt, rollbackSuspected: false, notes: `Activated with key (school ${keySchool}, ${days} days)` },
     });
   } else {
     await prisma.license.create({
       data: {
         licenseKey: key,
-        schoolId,
+        schoolId: keySchool,
         status: "ACTIVE",
         trialStartedAt: new Date(),
+        trialEndsAt: endsAt,
         activatedAt: new Date(),
-        notes: `Activated with key (school ${check.schoolId})`,
+        notes: `Activated with key (school ${keySchool}, ${days} days)`,
       },
     });
   }
+  await setSetting("license.schoolCode", keySchool);
   await auditLog(user.id, "ACTIVATE", "license", key, { action: "activate" });
   return NextResponse.json({ ok: true, data: await getLicenseStatus() });
 });

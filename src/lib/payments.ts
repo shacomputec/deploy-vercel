@@ -210,7 +210,23 @@ export async function getPaymentSettings(): Promise<PaymentSettings> {
 
 /** The developer's own gateway keys — used only for license-activation payments. */
 export async function getDevPaymentSettings(): Promise<PaymentSettings> {
-  return readPaymentSettings(DEV_KEYS);
+  const s = await readPaymentSettings(DEV_KEYS);
+  // Environment fallback: when the developer hasn't saved keys in the console
+  // (fresh install / first boot), the developer's Paystack keys baked into the
+  // deployment env keep the buyer's "Pay / Activate" screen fully functional.
+  // Without this, `paystackEnabled` stays false and the buyer sees NO online
+  // payment option at all. Prefer SEED_PAYSTACK_* (the canonical names used by
+  // the seed + sync-payments), then the plain PAYSTACK_* form.
+  if (!s.paystackSecretKey) {
+    const unquote = (v: string) => v.trim().replace(/^"|"$/g, "");
+    const secret = unquote(process.env.SEED_PAYSTACK_SECRET_KEY || process.env.PAYSTACK_SECRET_KEY || "");
+    if (secret) {
+      s.paystackSecretKey = secret;
+      s.paystackEnabled = true;
+      s.paystackPublicKey = s.paystackPublicKey || unquote(process.env.SEED_PAYSTACK_PUBLIC_KEY || process.env.PAYSTACK_PUBLIC_KEY || "");
+    }
+  }
+  return s;
 }
 
 export async function savePaymentSettings(
@@ -799,7 +815,15 @@ export async function settleGatewayTx(txId: string) {
       if (!realKey && !issued) {
         const code = scope.replace(/[^A-Z0-9]/g, "") || "MAIN";
         try {
-          const minted = generateActivationKey(code, 365);
+          // Subscription plans fix the subscription length (30/365/730 days) in
+          // the tx meta at purchase time; one-time tiers default to 365.
+          let metaDays = 365;
+          try {
+            const parsed = tx.meta ? (JSON.parse(tx.meta) as Record<string, unknown>) : {};
+            const d = Number(parsed.days);
+            if (Number.isFinite(d) && d > 0 && d <= 3650) metaDays = Math.round(d);
+          } catch { /* fall back to 365 */ }
+          const minted = generateActivationKey(code, metaDays);
           const devUser = await p.user.findFirst({ where: { role: { name: "developer" } }, select: { id: true } });
           issued = await p.licenseIssuance.create({
             data: {
@@ -809,7 +833,7 @@ export async function settleGatewayTx(txId: string) {
               keyHash: hashValue(minted.key),
               keyEncrypted: encryptLicenseKey(minted.key),
               issuedById: devUser?.id ?? null,
-              notes: "Auto-issued on license payment confirmation",
+              notes: `Auto-issued on license payment confirmation (${metaDays} days)`,
             },
           });
           realKey = minted.key;

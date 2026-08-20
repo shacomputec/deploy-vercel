@@ -42,3 +42,6 @@ prisma/*.db-journal
 
 # mobile APK releases (119MB — served locally, never pushed to git/Vercel)
 public/mobile/
+
+.vercel
+.env*

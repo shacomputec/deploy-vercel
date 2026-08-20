@@ -27,9 +27,20 @@ export const POST = handle(async (req) => {
   const ip = clientIp(req);
   rateLimit(`licpurchase:${ip}`, 5, 60_000);
 
-  const body = await readJson<{ schoolName?: string; tier?: string; method?: string; email?: string; phone?: string }>(req);
+  const body = await readJson<{ schoolName?: string; tier?: string; plan?: string; method?: string; email?: string; phone?: string }>(req);
   const method = String(body.method || "").toUpperCase();
   if (method !== "MOMO" && method !== "PAYSTACK") throw new ApiError("Payment method must be MOMO or PAYSTACK", 422);
+
+  // Subscription plans are priced HERE on the server — a buyer can never set
+  // the amount themselves. The same prices shown on the /buy page.
+  const PLANS: Record<string, { amount: number; days: number; label: string }> = {
+    "1m": { amount: 250, days: 30, label: "1 month" },
+    "12m": { amount: 2800, days: 365, label: "12 months" },
+    "24m": { amount: 4000, days: 730, label: "24 months" },
+  };
+  const planKey = String(body.plan || "").toLowerCase();
+  const plan = PLANS[planKey];
+  if (body.plan && !plan) throw new ApiError("Unknown subscription plan.", 422);
   const tier = body.tier === "shs" ? "shs" : "basic";
 
   // The BUYER's school name becomes the SCHOOLID embedded in their license key
@@ -44,7 +55,10 @@ export const POST = handle(async (req) => {
 
   const config = await getLicenseConfig();
   const s = await getDevPaymentSettings();
-  const amount = tier === "shs" ? config.priceShs : config.priceBasic;
+  // A plan fixes both the price and the subscription length (days). The
+  // legacy one-time tiers use the developer-configured prices with 365 days.
+  const amount = plan ? plan.amount : tier === "shs" ? config.priceShs : config.priceBasic;
+  const days = plan ? plan.days : 365;
   // An enabled-but-not-live-ready gateway (e.g. MTN live missing the portal
   // API User ID / API Key) must give clean guidance, never a 502 crash.
   const ready =
@@ -89,7 +103,7 @@ export const POST = handle(async (req) => {
       buyerName: schoolName,
       deliveryEmail: deliveryEmail || null,
       deliveryPhone: deliveryPhone || null,
-      meta: JSON.stringify({ tier }),
+      meta: JSON.stringify({ tier, plan: planKey || null, days }),
     },
   });
 

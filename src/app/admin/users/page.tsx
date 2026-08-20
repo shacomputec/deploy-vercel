@@ -10,6 +10,7 @@ import { Field, Input, Select } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type UserRow = {
@@ -274,7 +275,7 @@ export default function UsersPage() {
           <Field label="Password" hint="Leave blank to generate a temporary password.">
             <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Optional — auto-generated" />
           </Field>
-          <Field label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+          <PhoneField value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setModal(false)}>Cancel</Button>
             <Button type="submit" loading={saving}><UserCog className="h-4 w-4" /> Create User</Button>
@@ -336,7 +337,7 @@ export default function UsersPage() {
               </Select>
             </Field>
           </div>
-          <Field label="Phone"><Input value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} /></Field>
+          <PhoneField value={editForm.phone} onChange={(v) => setEditForm({ ...editForm, phone: v })} />
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
             <label className="flex items-start gap-2 text-sm text-amber-800">
               <input

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, FileUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
+import { isValidGhPhone, isValidNhis, normalizeNhis, GH_PHONE_HINT, NHIS_HINT } from "@/lib/client-validation";
 
 type Level = { id: string; name: string };
 
@@ -152,8 +153,8 @@ export function AdmissionForm({ levels, classes }: { levels: Level[]; classes: C
             </Select>
           </Field>
         )}
-        <Field label="NHIS Number" hint="National Health Insurance Scheme number">
-          <Input value={form.nhisNumber} onChange={(e) => set("nhisNumber", e.target.value)} placeholder="e.g. 5100xxxxxx" />
+        <Field label="NHIS Number" hint="Exactly 9 digits (e.g. 123456789)" error={form.nhisNumber.trim() && !isValidNhis(form.nhisNumber) ? NHIS_HINT : undefined}>
+          <Input value={normalizeNhis(form.nhisNumber)} onChange={(e) => set("nhisNumber", normalizeNhis(e.target.value))} placeholder="e.g. 123456789" inputMode="numeric" />
         </Field>
         <Field label="Weighing Card Number" hint="Child health / weighing card (if available)">
           <Input value={form.weighingCardNumber} onChange={(e) => set("weighingCardNumber", e.target.value)} />
@@ -167,8 +168,8 @@ export function AdmissionForm({ levels, classes }: { levels: Level[]; classes: C
         <Field label="Full name *">
           <Input value={form.parentName} onChange={(e) => set("parentName", e.target.value)} placeholder="Parent or guardian" />
         </Field>
-        <Field label="Phone number *">
-          <Input value={form.parentPhone} onChange={(e) => set("parentPhone", e.target.value)} placeholder="e.g. 0244 000 000" />
+        <Field label="Phone number *" error={form.parentPhone.trim() && !isValidGhPhone(form.parentPhone) ? GH_PHONE_HINT : undefined}>
+          <Input value={form.parentPhone} onChange={(e) => set("parentPhone", e.target.value)} placeholder="e.g. 0244 000 000" inputMode="tel" />
         </Field>
         <Field label="Email">
           <Input type="email" value={form.parentEmail} onChange={(e) => set("parentEmail", e.target.value)} placeholder="you@example.com" />

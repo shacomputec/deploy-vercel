@@ -7,6 +7,7 @@ import { SCHOOL_TYPES, type SchoolType } from "@/lib/school-type";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type School = {
@@ -233,7 +234,7 @@ export default function SettingsPage() {
           <div>
             <h3 className="text-lg font-semibold text-ink">Contact & Location</h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <Field label="Phone"><Input value={form.phone ?? ""} onChange={(e) => set({ phone: e.target.value })} /></Field>
+              <PhoneField label="Phone" value={form.phone ?? ""} onChange={(v) => set({ phone: v })} />
               <Field label="Email"><Input value={form.email ?? ""} onChange={(e) => set({ email: e.target.value })} /></Field>
               <Field label="Address"><Input value={form.address ?? ""} onChange={(e) => set({ address: e.target.value })} /></Field>
               <Field label="Location name (map search)"><Input value={form.locationName ?? ""} onChange={(e) => set({ locationName: e.target.value })} /></Field>
@@ -338,7 +339,7 @@ export default function SettingsPage() {
             <p className="flex items-center gap-2 text-sm font-bold text-slate-800"><Send className="h-4 w-4 text-primary" /> Send a live test notification</p>
             <p className="mt-1 text-xs text-slate-500">Fires a message through email, WhatsApp and SMS with the real providers and reports each channel's result — perfect for verifying keys after setup. Leave a field empty to use the school/developer contact from the profile.</p>
             <form onSubmit={sendTest} className="mt-3 grid gap-3 sm:grid-cols-2">
-              <Field label="To phone (WhatsApp + SMS)"><Input value={testForm.phone} onChange={(e) => setTestForm({ ...testForm, phone: e.target.value })} placeholder="+233 2XX XXX XXX" inputMode="tel" /></Field>
+              <PhoneField label="To phone (WhatsApp + SMS)" value={testForm.phone} onChange={(v) => setTestForm({ ...testForm, phone: v })} />
               <Field label="To email"><Input value={testForm.email} onChange={(e) => setTestForm({ ...testForm, email: e.target.value })} placeholder="recipient@example.com" /></Field>
               <div className="sm:col-span-2"><Button type="submit" loading={testBusy}><Send className="h-4 w-4" /> Send test now</Button></div>
             </form>
@@ -390,7 +391,7 @@ export default function SettingsPage() {
             <Field label="SMS mode" hint="console (dev) | smsonlinegh | hubtel | twilio">
               <Input value={sys["sms.mode"] ?? "console"} onChange={(e) => setSys({ ...sys, "sms.mode": e.target.value })} />
             </Field>
-            <Field label="Kaya AI mode" hint="offline (built-in, no key needed) | openai">
+            <Field label="shacomputec AI mode" hint="offline (built-in, no key needed) | openai">
               <Input value={sys["ai.mode"] ?? "offline"} onChange={(e) => setSys({ ...sys, "ai.mode": e.target.value })} />
             </Field>
           </div>

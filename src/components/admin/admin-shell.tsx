@@ -68,18 +68,17 @@ const NAV = [
   { section: "Website" },
   { href: "/admin/content", label: "Content", icon: Newspaper },
   { section: "System" },
-  // The System section is SUPER-ADMIN territory: users, roles, settings,
-  // schools, backup and audit are only shown to the super-admin (and the
-  // developer). Ordinary admins/headteachers run the school — they don't see
-  // these, matching what the login page tells each role it can access.
-  { href: "/admin/users", label: "Users", icon: UserCog, superOnly: true },
-  { href: "/admin/roles", label: "Roles & Permissions", icon: ShieldCheck, superOnly: true },
-  // License & Activation is STRICTLY developer-only — it lives in the
-  // Developer Console (/dev) and is never shown in the admin portal menu.
-  { href: "/admin/settings", label: "School & Settings", icon: Settings, superOnly: true },
+  // The System section is shown to the Admin role and above (developer,
+  // super-admin, admin): admins manage the school's users, roles, settings,
+  // backups and audit logs. Only multi-school management (Schools) stays
+  // super-admin/developer territory. License & Activation lives exclusively
+  // in the Developer Console (/dev) and is never shown in the admin portal.
+  { href: "/admin/users", label: "Users", icon: UserCog, adminPlus: true },
+  { href: "/admin/roles", label: "Roles & Permissions", icon: ShieldCheck, adminPlus: true },
+  { href: "/admin/settings", label: "School & Settings", icon: Settings, adminPlus: true },
   { href: "/admin/schools", label: "Schools", icon: Building2, superOnly: true },
-  { href: "/admin/backup", label: "Backup & Restore", icon: DatabaseBackup, superOnly: true },
-  { href: "/admin/audit", label: "Audit Logs", icon: ScrollText, superOnly: true },
+  { href: "/admin/backup", label: "Backup & Restore", icon: DatabaseBackup, adminPlus: true },
+  { href: "/admin/audit", label: "Audit Logs", icon: ScrollText, adminPlus: true },
   { section: "Help" },
   { href: "/admin/whats-new", label: "What's New", icon: Sparkles, dot: true },
   { href: "/admin/guide", label: "User Guide", icon: BookOpenText },
@@ -90,13 +89,14 @@ const NAV = [
 
 // Developer-only navigation items are filtered out for every other role, and
 // SHS-only items (e.g. Programmes) are hidden when the school runs no SHS.
-// System items (users/roles/settings/schools/backup/audit) are super-admin
-// territory — ordinary admin/headteacher/staff never see them.
-function visibleNav(isDeveloper: boolean, isSuperAdmin: boolean, schoolType: SchoolType) {
+// adminPlus items (users/roles/settings/backup/audit) show for the Admin
+// role and above; superOnly items (Schools) are super-admin/developer only.
+function visibleNav(isDeveloper: boolean, isSuperAdmin: boolean, isAdmin: boolean, schoolType: SchoolType) {
   return NAV.filter(
     (item) =>
       (!("devOnly" in item && item.devOnly) || isDeveloper) &&
       (!("superOnly" in item && item.superOnly) || isSuperAdmin) &&
+      (!("adminPlus" in item && item.adminPlus) || isSuperAdmin || isAdmin) &&
       (!("shsOnly" in item && item.shsOnly) || includesSHS(schoolType))
   );
 }
@@ -148,10 +148,11 @@ export function AdminShell({
   }, []);
   const isDeveloper = user.roleName === "developer";
   const isSuperAdmin = isDeveloper || user.roleName === "super_admin";
+  const isAdmin = isSuperAdmin || user.roleName === "admin";
   const { t } = useLanguage();
   const modeLabel = schoolType === "BASIC" ? "Basic School" : schoolType === "SHS" ? "SHS" : "Basic + SHS";
   const ModeIcon = schoolType === "BASIC" ? CapIcon : schoolType === "SHS" ? Landmark : Landmark;
-  const navItems = filterNav(visibleNav(isDeveloper, isSuperAdmin, schoolType), navQuery);
+  const navItems = filterNav(visibleNav(isDeveloper, isSuperAdmin, isAdmin, schoolType), navQuery);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });

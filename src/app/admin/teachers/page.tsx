@@ -12,6 +12,7 @@ import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField, GhanaCardField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type Teacher = {
@@ -273,7 +274,7 @@ export default function TeachersPage() {
           <Field label="SSF number"><Input value={form.ssfNumber} onChange={(e) => setForm({ ...form, ssfNumber: e.target.value })} /></Field>
           <Field label="Staff email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
           <Field label="Date of first appointment"><Input type="date" value={form.dateOfFirstAppointment} onChange={(e) => setForm({ ...form, dateOfFirstAppointment: e.target.value })} /></Field>
-          <Field label="Staff telephone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+          <PhoneField label="Staff telephone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           <Field label="NTC / RED number"><Input value={form.ntcReg} onChange={(e) => setForm({ ...form, ntcReg: e.target.value })} /></Field>
           <Field label="Area of specialization"><Input value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} /></Field>
           <Field label="Highest university / college attended"><Input value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })} /></Field>
@@ -283,8 +284,8 @@ export default function TeachersPage() {
           <Field label="Home town"><Input value={form.hometown} onChange={(e) => setForm({ ...form, hometown: e.target.value })} /></Field>
           <Field label="Home town district"><Input value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} /></Field>
           <Field label="Home town region"><Input value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} /></Field>
-          <Field label="Ghana Card number"><Input value={form.ghanaCard} onChange={(e) => setForm({ ...form, ghanaCard: e.target.value })} /></Field>
-          <Field label="Emergency contact"><Input value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} /></Field>
+          <GhanaCardField label="Ghana Card number" value={form.ghanaCard} onChange={(v) => setForm({ ...form, ghanaCard: v })} />
+          <PhoneField label="Emergency contact" value={form.emergencyContact} onChange={(v) => setForm({ ...form, emergencyContact: v })} />
           <Field label="Association type"><Input value={form.association} onChange={(e) => setForm({ ...form, association: e.target.value })} placeholder="e.g. GNAT, NAGRAT, CCT" /></Field>
           <Field label="Religion"><Input value={form.religion} onChange={(e) => setForm({ ...form, religion: e.target.value })} /></Field>
           <Field label="Marital status"><Input value={form.maritalStatus} onChange={(e) => setForm({ ...form, maritalStatus: e.target.value })} /></Field>

@@ -11,6 +11,7 @@ import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type Staff = {
@@ -122,7 +123,7 @@ export default function StaffPage() {
             </Select>
           </Field>
           <Field label="Designation"><Input value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} /></Field>
-          <Field label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+          <PhoneField value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           <Field label="Email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
           <div className="flex justify-end gap-2 sm:col-span-2">
             <Button type="button" variant="ghost" onClick={() => setModal(null)}>Cancel</Button>

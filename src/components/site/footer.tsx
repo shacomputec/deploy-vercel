@@ -22,6 +22,7 @@ export function SiteFooter({ school, isDeveloper = false }: { school: School | n
     { href: "/gallery", label: "Gallery" },
     { href: "/news", label: "News & Events" },
     { href: "/buy", label: "Buy This System" },
+    { href: "/downloads", label: "Downloads" },
   ];
 
   return (

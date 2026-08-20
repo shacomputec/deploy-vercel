@@ -21,8 +21,8 @@ type StatusData = {
 };
 
 const METHODS = [
-  { id: "MOMO", name: "Mobile Money", desc: "MTN · AirtelTigo · Telecel — confirm with a USSD prompt", icon: Smartphone, tone: "text-amber-600 bg-amber-50 ring-amber-200" },
   { id: "PAYSTACK", name: "Paystack", desc: "Cards, bank accounts, mobile money", icon: CreditCard, tone: "text-sky-600 bg-sky-50 ring-sky-200" },
+  { id: "MOMO", name: "Mobile Money", desc: "MTN · AirtelTigo · Telecel — confirm with a USSD prompt", icon: Smartphone, tone: "text-amber-600 bg-amber-50 ring-amber-200" },
 ] as const;
 
 const MOMO_PROVIDERS = [
@@ -44,7 +44,7 @@ function detectNetwork(phone: string): MomoProviderId | null {
 export function PayCheckout() {
   const [step, setStep] = useState<Step>("details");
   const [form, setForm] = useState({ admissionNo: "", amount: "", phone: "" });
-  const [method, setMethod] = useState<"MOMO" | "PAYSTACK">("MOMO");
+  const [method, setMethod] = useState<"MOMO" | "PAYSTACK">("PAYSTACK");
   const [provider, setProvider] = useState<MomoProviderId>("MTN");
   const [networkNote, setNetworkNote] = useState<string | null>(null);
   const [init, setInit] = useState<InitiateData | null>(null);

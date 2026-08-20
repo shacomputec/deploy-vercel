@@ -12,6 +12,7 @@ import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField, GhanaCardField, NhisField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type Student = {
@@ -264,14 +265,10 @@ export default function StudentsPage() {
               {classesOfLevel.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </Select>
           </Field>
-          <Field label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="0244 000 000" /></Field>
+          <PhoneField value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           <Field label="Religion"><Input value={form.religion} onChange={(e) => setForm({ ...form, religion: e.target.value })} /></Field>
-          <Field label={idFieldLabel.label} className="sm:col-span-2" hint={idFieldLabel.hint}>
-            <Input value={form.nhisNumber} onChange={(e) => setForm({ ...form, nhisNumber: e.target.value })} placeholder={idFieldLabel.label.includes("NHIS") ? "e.g. 4710012345678" : "e.g. GHA-000000000-0"} />
-          </Field>
-          <Field label="Ghana Card No. (only for SHS)" className="sm:col-span-2" hint="Fill this instead of NHIS when the student is in Senior High School.">
-            <Input value={form.ghanaCard} onChange={(e) => setForm({ ...form, ghanaCard: e.target.value })} placeholder="e.g. GHA-000000000-0" />
-          </Field>
+          <NhisField label={idFieldLabel.label} hint={idFieldLabel.hint} className="sm:col-span-2" value={form.nhisNumber} onChange={(v) => setForm({ ...form, nhisNumber: v })} />
+          <GhanaCardField label="Ghana Card No. (only for SHS)" className="sm:col-span-2" value={form.ghanaCard} onChange={(v) => setForm({ ...form, ghanaCard: v })} />
           <div className="flex justify-end gap-2 sm:col-span-2">
             <Button type="button" variant="ghost" onClick={() => setModal(null)}>Cancel</Button>
             <Button type="submit" loading={saving}>{modal?.mode === "edit" ? "Save Changes" : "Add Student"}</Button>

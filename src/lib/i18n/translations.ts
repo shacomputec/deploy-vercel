@@ -2,7 +2,7 @@ import type { LanguageCode } from "./languages";
 
 /**
  * UI string dictionary for the main chrome surfaces (navigation, login,
- * common actions, Kaya AI). Lookups fall back through the language's
+ * common actions, shacomputec AI). Lookups fall back through the language's
  * `fallback` chain and finally to English, so partial dictionaries are safe.
  *
  * Adding a new surface: pick short keys here and call `t("key")` from
@@ -21,6 +21,7 @@ export type UiKey =
   | "nav.events"
   | "nav.admissions"
   | "nav.buy"
+  | "nav.downloads"
   | "nav.contact"
   | "nav.payFees"
   | "nav.resultChecker"
@@ -67,7 +68,7 @@ export type UiKey =
   | "common.back"
   // admin chrome
   | "admin.systemTitle"
-  // Kaya AI
+  // shacomputec AI
   | "kaya.title"
   | "kaya.status"
   | "kaya.intro"
@@ -91,6 +92,7 @@ const en: Dict = {
   "nav.events": "Events",
   "nav.admissions": "Admissions",
   "nav.buy": "Buy This System",
+  "nav.downloads": "Downloads",
   "nav.contact": "Contact",
   "nav.payFees": "Pay Fees",
   "nav.resultChecker": "Result Checker",
@@ -134,9 +136,9 @@ const en: Dict = {
   "common.send": "Send",
   "common.back": "Back",
   "admin.systemTitle": "School Management Information System",
-  "kaya.title": "Kaya AI",
+  "kaya.title": "shacomputec AI",
   "kaya.status": "Online · Ask me anything",
-  "kaya.intro": "Hello! 👋 I'm Kaya AI — I can help with lesson plans, report comments, admissions, fees, results and more.",
+  "kaya.intro": "Hello! 👋 I'm shacomputec AI — I can help with lesson plans, report comments, admissions, fees, results and more.",
   "kaya.placeholder": "Ask about the school…",
   "kaya.error": "Sorry, I could not respond right now.",
   "kaya.offline": "Offline — built-in assistant",
@@ -155,6 +157,7 @@ const tw: Partial<Dict> = {
   "nav.events": "Nhyiamu",
   "nav.admissions": "Adesua Foforo",
   "nav.buy": "Tɔ Saa Nhyehyɛe Yi",
+  "nav.downloads": "Ntotoeɛ",
   "nav.contact": "Ka Yɛn Ho",
   "nav.payFees": "Tua Sukuu Ka",
   "nav.resultChecker": "Nsusui Hwɛ",
@@ -198,9 +201,9 @@ const tw: Partial<Dict> = {
   "common.send": "Soma",
   "common.back": "San Wɔ Akyi",
   "admin.systemTitle": "Sukuu Nsɛm Nhyehyɛe Sisteɛm",
-  "kaya.title": "Kaya AI",
+  "kaya.title": "shacomputec AI",
   "kaya.status": "Ɛwɔ hɔ · bisa me biribiara",
-  "kaya.intro": "Hello! 👋 Mene Kaya AI — metumi aboa wo adesua nhyehyɛe, report nsusuiɛ, admissions, ka, nsusui hwɛ ne nea ɛkeka ho.",
+  "kaya.intro": "Hello! 👋 Mene shacomputec AI — metumi aboa wo adesua nhyehyɛe, report nsusuiɛ, admissions, ka, nsusui hwɛ ne nea ɛkeka ho.",
   "kaya.placeholder": "Bisa fa sukuu ho…",
   "kaya.error": "Yaa, merentumi nnye mmuaeɛ seesei.",
   "kaya.offline": "Offline — boa a ɛwɔ hɔ",
@@ -219,6 +222,7 @@ const ee: Partial<Dict> = {
   "nav.events": "Nuwɔnawo",
   "nav.admissions": "Suku Yiyi",
   "nav.buy": "Ƒle Sistɛm Nsia",
+  "nav.downloads": "Shɛ̃ɛmɔ",
   "nav.contact": "Kpe ɖe Mí Ŋu",
   "nav.payFees": "Ʋo Suku Gawo",
   "nav.resultChecker": "Kpɔ Ƒoƒoɖoɖo",
@@ -262,9 +266,9 @@ const ee: Partial<Dict> = {
   "common.send": "Ɖo ɖa",
   "common.back": "Trɔ Yi Megbe",
   "admin.systemTitle": "Suku Ŋuti Nyatakaka Sistɛm",
-  "kaya.title": "Kaya AI",
+  "kaya.title": "shacomputec AI",
   "kaya.status": "Le dzineme · Bia ɖe nye ŋu nane",
-  "kaya.intro": "Hello! 👋 Nye Kaya AI — nate ŋu akpe ɖe ŋuwò le nufiafia dɔdokuiwo, ƒoƒoɖoɖo ŋɔŋlɔwo, suku yiyi, gawo kple bubuwo ŋu.",
+  "kaya.intro": "Hello! 👋 Nye shacomputec AI — nate ŋu akpe ɖe ŋuwò le nufiafia dɔdokuiwo, ƒoƒoɖoɖo ŋɔŋlɔwo, suku yiyi, gawo kple bubuwo ŋu.",
   "kaya.placeholder": "Bia nua tso suku ŋu…",
   "kaya.error": "Meɖe gbe o, nyemate ŋu aɖo eŋu fifia o.",
   "kaya.offline": "Mele dzineme o — nufiala si le eme",
@@ -283,6 +287,7 @@ const ga: Partial<Dict> = {
   "nav.events": "Nibii",
   "nav.admissions": "Skul Nyɛɛmɔ",
   "nav.buy": "He Nɛɛ",
+  "nav.downloads": "Labisibu",
   "nav.contact": "Kpe Wɔ He",
   "nav.payFees": "Jo Skul Fii",
   "nav.resultChecker": "Hewalɛ Kwɛmɔ",
@@ -326,9 +331,9 @@ const ga: Partial<Dict> = {
   "common.send": "Tso",
   "common.back": "Sɛɛ O Ya",
   "admin.systemTitle": "Skul Sane Sistɛm",
-  "kaya.title": "Kaya AI",
+  "kaya.title": "shacomputec AI",
   "kaya.status": "Yɛ mli · bi mi nɔ ko",
-  "kaya.intro": "Hello! 👋 Mi ji Kaya AI — mi baanyɛ ye mi bua o yɛ nitsumɔ shishitoo, hewalɛ wolo, skul nyɛɛmɔ, fii kɛ ekomei amli.",
+  "kaya.intro": "Hello! 👋 Mi ji shacomputec AI — mi baanyɛ ye mi bua o yɛ nitsumɔ shishitoo, hewalɛ wolo, skul nyɛɛmɔ, fii kɛ ekomei amli.",
   "kaya.placeholder": "Bi hewo sane ko…",
   "kaya.error": "Mei ba mli, minyɛɛɛ nɔ̃mɔ dɔŋŋ.",
   "kaya.offline": "Offline — tsuŋ ni yɛ mli",
@@ -347,6 +352,7 @@ const ha: Partial<Dict> = {
   "nav.events": "Ayyuka",
   "nav.admissions": "Shiga Makaranta",
   "nav.buy": "Saya Wannan Tsarin",
+  "nav.downloads": "Sauke",
   "nav.contact": "Tuntuɓi Mu",
   "nav.payFees": "Biya Kuɗin Makaranta",
   "nav.resultChecker": "Duba Sakamako",
@@ -390,9 +396,9 @@ const ha: Partial<Dict> = {
   "common.send": "Aika",
   "common.back": "Koma Baya",
   "admin.systemTitle": "Tsarin Gudanar da Bayanan Makaranta",
-  "kaya.title": "Kaya AI",
+  "kaya.title": "shacomputec AI",
   "kaya.status": "Kan layi · Tambaye ni komai",
-  "kaya.intro": "Sannu! 👋 Ni Kaya AI ne — zan iya taimaka da shirin darasi, sharhin sakamako, shiga makaranta, kuɗi, sakamako da ƙari.",
+  "kaya.intro": "Sannu! 👋 Ni shacomputec AI ne — zan iya taimaka da shirin darasi, sharhin sakamako, shiga makaranta, kuɗi, sakamako da ƙari.",
   "kaya.placeholder": "Tambayi game da makaranta…",
   "kaya.error": "Yi hakuri, ba zan iya amsa ba yanzu.",
   "kaya.offline": "Offline — mataimaki na ciki",
@@ -411,6 +417,7 @@ const dag: Partial<Dict> = {
   "nav.events": "Niya Nima",
   "nav.admissions": "Shikuru Kpɛbu",
   "nav.buy": "Da Sɔŋsim Ŋɔ",
+  "nav.downloads": "Ɖeɖe",
   "nav.contact": "Tabi Ti",
   "nav.payFees": "Yo Shikuru Liɣiri",
   "nav.resultChecker": "Lihi Bunahi",
@@ -454,9 +461,9 @@ const dag: Partial<Dict> = {
   "common.send": "Tim",
   "common.back": "Labi Yi",
   "admin.systemTitle": "Shikuru Lahabaya Sɔŋsim",
-  "kaya.title": "Kaya AI",
+  "kaya.title": "shacomputec AI",
   "kaya.status": "Be sunsuuni · Bɔhimi ma shɛli",
-  "kaya.intro": "Hello! 👋 N nyɛla Kaya AI — n ni tooi sɔŋ a bɔhimbu yaɣa, bunahi sabbu, shikuru kpɛbu, liɣiri, bunahi mini din pahi.",
+  "kaya.intro": "Hello! 👋 N nyɛla shacomputec AI — n ni tooi sɔŋ a bɔhimbu yaɣa, bunahi sabbu, shikuru kpɛbu, liɣiri, bunahi mini din pahi.",
   "kaya.placeholder": "Bohi shikuru yɛltɔɣa…",
   "kaya.error": "Naɣila, n ku tooi labisi a pumpɔŋɔ.",
   "kaya.offline": "Offline — sɔŋsim din be ni",

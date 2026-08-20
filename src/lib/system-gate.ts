@@ -1,5 +1,5 @@
 import { getSetting, getSettings } from "@/lib/settings";
-import { getLicenseStatus } from "@/lib/license";
+import { getLicenseStatus, checkRemoteLicense } from "@/lib/license";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -46,7 +46,7 @@ export async function getApiGateBlock(): Promise<{ blocked: boolean; message: st
   const locked = settings.get("system.locked") === "true";
   const lockMessage = settings.get("system.lockMessage")?.trim();
 
-  const lic = await prisma.license.findFirst({ orderBy: { createdAt: "desc" } });
+  let lic = await prisma.license.findFirst({ orderBy: { createdAt: "desc" } });
   const schoolId = (lic?.schoolId || "main").toUpperCase();
   const schoolLocked = settings.get(`lock.school.${schoolId}`) === "true";
   const schoolMessage = settings.get(`lock.school.${schoolId}.message`)?.trim();
@@ -59,13 +59,23 @@ export async function getApiGateBlock(): Promise<{ blocked: boolean; message: st
         "This system has been locked by the vendor. Contact your system developer to resolve it.",
     };
   }
+  // Online enforcement: while ACTIVE, check in with the developer's licensing
+  // server (throttled to once per 12h). A REVOKED/EXPIRED/MISMATCH verdict
+  // flips this install's status, and the check below then blocks it. Network
+  // failure is a grace window — the local verdict keeps governing.
+  if (lic?.status === "ACTIVE") {
+    const flipped = await checkRemoteLicense(lic);
+    if (flipped) lic = { ...lic, status: flipped.status };
+  }
   if (lic && (lic.status === "EXPIRED" || lic.status === "SUSPENDED")) {
     return {
       blocked: true,
       message:
         lic.status === "SUSPENDED"
           ? "Installation suspended. Contact your system developer."
-          : "Trial expired. Activate your license to continue.",
+          : lic.activatedAt
+            ? "License expired. Contact the developer to renew your subscription."
+            : "Trial expired. Activate your license to continue.",
     };
   }
   return { blocked: false, message: "" };

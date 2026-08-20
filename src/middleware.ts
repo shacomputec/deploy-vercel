@@ -4,12 +4,22 @@ import { jwtVerify } from "jose";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret-change-me");
 const SESSION_COOKIE = "smis_session";
 
+// API routes that serve HTML pages and handle their own auth — the
+// middleware must NOT block them with JSON errors; instead redirect to
+// /login so the desktop bridge and mobile re-bridge can kick in.
+const HTML_API = new Set([
+  "/api/guide/buyer",
+  "/api/dev/sales-report",
+  "/api/guide/dev-console",
+]);
+
 // API routes that are intentionally public
 const PUBLIC_API = new Set([
   "/api/auth/login",
   "/api/auth/staff-login", // staff-ID sign-in (POST public)
   "/api/auth/2fa/verify",
   "/api/auth/setup",
+  "/api/auth/bridge", // mobile WebView session bridge (verifies its own token)
   "/api/results/request-otp",
   "/api/results/verify",
   "/api/ai/chat",
@@ -21,6 +31,7 @@ const PUBLIC_API = new Set([
   "/api/payments/initiate",
   "/api/payments/status",
   "/api/license/purchase", // public 'Buy this system' checkout (own rate limiting)
+  "/api/license/remote-status", // public licensing-authority check-in (key is the credential)
   "/api/payments/webhook/paystack",
   "/api/payments/webhook/momo",
   "/api/desktop/update", // desktop auto-update manifest
@@ -66,6 +77,11 @@ export async function middleware(req: NextRequest) {
       await jwtVerify(token, secret);
       return NextResponse.next();
     } catch {
+      if (HTML_API.has(pathname)) {
+        const url = new URL("/login", req.url);
+        url.searchParams.set("next", pathname);
+        return NextResponse.redirect(url);
+      }
       return NextResponse.json({ ok: false, error: "Session expired" }, { status: 401 });
     }
   }
@@ -84,7 +100,10 @@ export async function middleware(req: NextRequest) {
     await jwtVerify(token, secret);
     return NextResponse.next();
   } catch {
-    if (pathname.startsWith("/api")) {
+    // HTML-returning API routes (buyer checklist, sales report) should
+    // redirect to /login like page routes — this lets the desktop bridge
+    // and mobile re-bridge re-authenticate instead of showing raw JSON.
+    if (pathname.startsWith("/api") && !HTML_API.has(pathname)) {
       return NextResponse.json({ ok: false, error: "Session expired" }, { status: 401 });
     }
     const url = new URL("/login", req.url);

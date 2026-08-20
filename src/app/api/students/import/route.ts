@@ -6,6 +6,14 @@ import { requirePerm } from "@/lib/permissions";
 import { auditLog } from "@/lib/audit";
 import { readSpreadsheet } from "@/lib/io";
 import { nextAdmissionNo } from "@/lib/sequences";
+import { ghPhone, ghanaCard, nhisNumber } from "@/lib/validators";
+
+/** Per-cell validation shared with the entry forms (src/lib/validators.ts). */
+function cellError(value: string, schema: typeof ghPhone | typeof ghanaCard | typeof nhisNumber): string | null {
+  if (!value) return null;
+  const r = schema.safeParse(value);
+  return r.success ? null : r.error.issues[0]!.message;
+}
 
 /**
  * Students import — the exact round-trip of GET /api/students/export.
@@ -74,13 +82,32 @@ export const POST = handle(async (req) => {
         if (!Number.isNaN(d.getTime())) data.dateOfBirth = d;
       }
       const phone = pick(row, idx(["phone", "telephone", "mobile"]));
+      const phoneErr = cellError(phone, ghPhone);
+      if (phoneErr) {
+        skipped.push(`${fullName} (phone: ${phoneErr})`);
+        continue;
+      }
       if (phone) data.phone = phone;
       const email = pick(row, idx(["email"]));
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        skipped.push(`${fullName} (email: invalid email address)`);
+        continue;
+      }
       if (email) data.email = email;
       const nhis = pick(row, idx(["nhisnumber", "nhis", "nhisno"]));
+      const nhisErr = cellError(nhis, nhisNumber);
+      if (nhisErr) {
+        skipped.push(`${fullName} (NHIS: ${nhisErr})`);
+        continue;
+      }
       if (nhis) data.nhisNumber = nhis;
-      const ghanaCard = pick(row, idx(["ghanacard", "ghanacardno", "ghcard"]));
-      if (ghanaCard) data.ghanaCard = ghanaCard;
+      const gCard = pick(row, idx(["ghanacard", "ghanacardno", "ghcard"]));
+      const cardErr = cellError(gCard, ghanaCard);
+      if (cardErr) {
+        skipped.push(`${fullName} (Ghana Card: ${cardErr})`);
+        continue;
+      }
+      if (gCard) data.ghanaCard = gCard;
       const hometown = pick(row, idx(["hometown", "town"]));
       if (hometown) data.hometown = hometown;
       const district = pick(row, idx(["district"]));

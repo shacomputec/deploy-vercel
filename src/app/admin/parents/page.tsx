@@ -12,15 +12,16 @@ import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty";
 import { Avatar } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField, GhanaCardField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type Parent = {
   id: string; fullName: string; phone: string; email: string | null;
-  occupation: string | null; relationship: string | null;
+  occupation: string | null; relationship: string | null; ghanaCard: string | null;
   children: { student: { id: string; fullName: string; admissionNo: string; class: { name: string } | null } }[];
 };
 
-const empty = { fullName: "", phone: "", email: "", occupation: "", relationship: "GUARDIAN" };
+const empty = { fullName: "", phone: "", email: "", occupation: "", relationship: "GUARDIAN", ghanaCard: "" };
 
 export default function ParentsPage() {
   const toast = useToast();
@@ -125,7 +126,7 @@ export default function ParentsPage() {
                   <td>
                     <div className="flex justify-end gap-1">
                       {canManageUsers && <button onClick={() => setAcctFor(p)} className="rounded-lg p-2 text-slate-400 hover:bg-emerald-50 hover:text-emerald-600" title="Assign / reset login credentials"><KeyRound className="h-4 w-4" /></button>}
-                      <button onClick={() => { setForm({ fullName: p.fullName, phone: p.phone, email: p.email ?? "", occupation: p.occupation ?? "", relationship: p.relationship ?? "GUARDIAN" }); setModal({ mode: "edit", parent: p }); }} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700" title="Edit"><Pencil className="h-4 w-4" /></button>
+                      <button onClick={() => { setForm({ fullName: p.fullName, phone: p.phone, email: p.email ?? "", occupation: p.occupation ?? "", relationship: p.relationship ?? "GUARDIAN", ghanaCard: p.ghanaCard ?? "" }); setModal({ mode: "edit", parent: p }); }} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700" title="Edit"><Pencil className="h-4 w-4" /></button>
                       <button onClick={() => remove(p)} className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600" title="Delete"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>
@@ -149,7 +150,7 @@ export default function ParentsPage() {
       <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.mode === "edit" ? "Edit Parent" : "Add Parent"} subtitle="Parents can be linked to multiple students.">
         <form onSubmit={save} className="grid gap-4 sm:grid-cols-2">
           <Field label="Full name *"><Input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} /></Field>
-          <Field label="Phone *"><Input required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+          <PhoneField label="Phone *" required value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           <Field label="Email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
           <Field label="Occupation"><Input value={form.occupation} onChange={(e) => setForm({ ...form, occupation: e.target.value })} /></Field>
           <Field label="Relationship">
@@ -157,6 +158,7 @@ export default function ParentsPage() {
               <option value="FATHER">Father</option><option value="MOTHER">Mother</option><option value="GUARDIAN">Guardian</option>
             </Select>
           </Field>
+          <GhanaCardField label="Ghana Card No." className="sm:col-span-2" value={form.ghanaCard} onChange={(v) => setForm({ ...form, ghanaCard: v })} />
           <div className="flex items-end justify-end gap-2 sm:col-span-2">
             <Button type="button" variant="ghost" onClick={() => setModal(null)}>Cancel</Button>
             <Button type="submit" loading={saving}><Users2 className="h-4 w-4" /> Save</Button>

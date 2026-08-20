@@ -18,11 +18,13 @@ prisma/*.db-journal
 prisma/data/
 backups/
 
-# desktop & mobile release binaries (multi-hundred-MB installers/APKs —
-# served from the school's local server, NOT from the cloud site)
-public/desktop/
-public/mobile/
+# desktop & mobile release binaries — the APK and update manifest ARE served
+# from the cloud site (mobile update checker + direct downloads). The 350 MB
+# installer stays local-only (Vercel static-file limits); the manifest still
+# points at it for LAN installs.
 desktop/artifacts/
+public/desktop/GES-School-MIS-Setup.exe
+public/desktop/GES-School-MIS-Portable.zip
 
 # tooling / scratch
 .freebuff/

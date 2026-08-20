@@ -20,7 +20,10 @@ export async function api<T = unknown>(path: string, options?: RequestInit): Pro
     /* non-JSON response */
   }
   if (!res.ok || !json?.ok) {
-    throw new ClientError(json?.error ?? `Request failed (${res.status})`, res.status, json?.issues);
+    // Prefer the first field-level issue (e.g. "Enter a valid 10-digit Ghana
+    // phone number") over the generic "Validation failed" envelope.
+    const message = json?.issues?.length ? json.issues[0]! : json?.error ?? `Request failed (${res.status})`;
+    throw new ClientError(message, res.status, json?.issues);
   }
   return json.data as T;
 }

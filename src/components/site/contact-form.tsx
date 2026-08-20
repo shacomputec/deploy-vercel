@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/input";
+import { PhoneField } from "@/components/admin/validated-field";
 
 export function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -53,9 +54,7 @@ export function ContactForm() {
         <Field label="Email *">
           <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </Field>
-        <Field label="Phone">
-          <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-        </Field>
+        <PhoneField label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
         <Field label="Subject *">
           <Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} />
         </Field>

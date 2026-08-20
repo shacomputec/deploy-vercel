@@ -14,6 +14,7 @@ import { Field, Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type School = {
@@ -349,7 +350,7 @@ export default function SchoolsPage() {
           <Field label="School name *"><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Kumasi International School" /></Field>
           <Field label="Short name"><Input value={form.shortName} onChange={(e) => setForm({ ...form, shortName: e.target.value })} placeholder="KIS" /></Field>
           <div className="sm:col-span-2"><Field label="Motto"><Input value={form.motto} onChange={(e) => setForm({ ...form, motto: e.target.value })} placeholder="Knowledge • Integrity • Excellence" /></Field></div>
-          <Field label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+          <PhoneField value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} label="Phone" placeholder="0244 000 000" />
           <Field label="Email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
           <Field label="Address"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
           <Field label="Region"><Input value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} placeholder="Ashanti Region, Ghana" /></Field>
@@ -546,9 +547,7 @@ export default function SchoolsPage() {
                 <Field label="Receipt email">
                   <Input type="email" value={deliveryEmail} onChange={(e) => setDeliveryEmail(e.target.value)} placeholder="office@school.edu.gh" />
                 </Field>
-                <Field label="Receipt phone (WhatsApp / SMS)">
-                  <Input value={deliveryPhone} onChange={(e) => setDeliveryPhone(e.target.value)} placeholder="0244 000 000" />
-                </Field>
+                <PhoneField value={deliveryPhone} onChange={setDeliveryPhone} label="Receipt phone (WhatsApp / SMS)" placeholder="0244 000 000" />
               </div>
 
               {paymentError && (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Loader2, ShieldCheck, Smartphone, CreditCard, AlertTriangle } from "lucide-react";
 import { api } from "@/lib/client";
 
@@ -11,12 +11,32 @@ type PurchaseResult = {
   message?: string;
 };
 
+export type BuyPlan = { id: "1m" | "12m" | "24m"; label: string; amount: number; schools: number };
+
+/** "Get this plan" button — dispatches the chosen plan; the checkout below
+ *  listens, pre-selects it and scrolls into view (the payment starts with
+ *  Paystack, never a WhatsApp chat). */
+export function PlanButton({ plan, featured }: { plan: BuyPlan; featured?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={() => window.dispatchEvent(new CustomEvent("buy-plan", { detail: plan }))}
+      className={`${featured ? "btn-primary" : "btn-outline"} mt-5 w-full`}
+    >
+      <CreditCard className="h-4 w-4" /> Get this plan
+    </button>
+  );
+}
+
 /** Public "Buy this system" checkout — no login needed. Pays the DEVELOPER
  *  (their gateway keys only) for a license; the key is delivered to the
  *  buyer's own contact. The developer's API secrets are never exposed.
- *  Two pricing tiers: Basic (Crèche → JHS) and Basic + SHS. */
+ *  Two pricing tiers: Basic (Crèche → JHS) and Basic + SHS — OR a subscription
+ *  plan (1/12/24 months) when the buyer picks a plan on the /buy page. */
 export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; priceShs: number }) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const [tier, setTier] = useState<"basic" | "shs">("basic");
+  const [plan, setPlan] = useState<BuyPlan | null>(null);
   const [schoolName, setSchoolName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -24,7 +44,20 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<PurchaseResult | null>(null);
-  const price = tier === "shs" ? priceShs : priceBasic;
+  const price = plan ? plan.amount : tier === "shs" ? priceShs : priceBasic;
+
+  useEffect(() => {
+    const onPlan = (e: Event) => {
+      const detail = (e as CustomEvent).detail as BuyPlan;
+      if (!detail?.id) return;
+      setPlan(detail);
+      setDone(null);
+      setError(null);
+      rootRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+    window.addEventListener("buy-plan", onPlan);
+    return () => window.removeEventListener("buy-plan", onPlan);
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,7 +67,7 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
     try {
       const res = await api<PurchaseResult>("/api/license/purchase", {
         method: "POST",
-        body: JSON.stringify({ schoolName, tier, method, email, phone }),
+        body: JSON.stringify({ schoolName, tier: plan ? undefined : tier, plan: plan?.id, method, email, phone }),
       });
       setDone(res);
       if (res.checkoutUrl) {
@@ -48,7 +81,7 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
   }
 
   return (
-    <div className="card relative overflow-hidden p-7">
+    <div ref={rootRef} className="card relative overflow-hidden p-7">
       <span className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-amber-200/40 blur-2xl" />
       <div className="flex items-center gap-2">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white">
@@ -56,7 +89,11 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
         </span>
         <div>
           <h3 className="text-lg font-bold text-slate-900">Buy now — pay securely online</h3>
-          <p className="text-xs text-slate-500">GH₵{price.toLocaleString()} · one-time · everything included</p>
+          <p className="text-xs text-slate-500">
+            {plan
+              ? `GH₵${plan.amount.toLocaleString()} · ${plan.label} · ${plan.schools} school${plan.schools > 1 ? "s" : ""} hosted · auto-lock at expiry`
+              : `GH₵${price.toLocaleString()} · one-time · everything included`}
+          </p>
         </div>
       </div>
 
@@ -83,6 +120,25 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
         </div>
       ) : (
         <form onSubmit={submit} className="mt-5 space-y-4">
+          {plan && (
+            <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary-soft px-3.5 py-2.5">
+              <p className="text-sm font-bold text-primary">
+                {plan.label} plan · GH₵{plan.amount.toLocaleString()} · {plan.schools} school{plan.schools > 1 ? "s" : ""} hosted
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setPlan(null);
+                  setDone(null);
+                  setError(null);
+                }}
+                className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+              >
+                Change plan
+              </button>
+            </div>
+          )}
+          {!plan && (
           <div>
             <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Your school type</label>
             <div className="mt-1.5 grid grid-cols-2 gap-2">
@@ -106,6 +162,7 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
               </button>
             </div>
           </div>
+          )}
           <div>
             <label className="text-xs font-bold uppercase tracking-wide text-slate-500">School name</label>
             <input
@@ -150,7 +207,8 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
                     : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
                 }`}
               >
-                <CreditCard className="h-4 w-4" /> Card / MoMo
+                <CreditCard className="h-4 w-4" /> Paystack
+                <span className="block text-[10px] font-medium">Cards · bank · mobile money</span>
               </button>
               <button
                 type="button"
@@ -175,7 +233,11 @@ export function BuyNowCheckout({ priceBasic, priceShs }: { priceBasic: number; p
           <button type="submit" disabled={busy} className="btn-accent w-full disabled:cursor-not-allowed disabled:opacity-60">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
             {busy ? "Starting secure payment…" : `Pay GH₵${price.toLocaleString()} securely`}
-          <p className="text-center text-[11px] text-slate-400">{tier === "shs" ? "Basic + SHS package" : "Basic school package"} · one-time · everything included</p>
+          <p className="text-center text-[11px] text-slate-400">
+            {plan
+              ? `${plan.label} plan · ${plan.schools} school${plan.schools > 1 ? "s" : ""} hosted · auto-lock at expiry`
+              : `${tier === "shs" ? "Basic + SHS package" : "Basic school package"} · one-time · everything included`}
+          </p>
           </button>
           <p className="text-center text-[11px] leading-relaxed text-slate-400">
             Secure payment via Paystack or Mobile Money. Your license key is delivered instantly to the contact above —

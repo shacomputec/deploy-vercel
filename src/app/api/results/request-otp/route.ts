@@ -17,7 +17,10 @@ export const POST = handle(async (req) => {
   if (!parsed.success) throw new ApiError(parsed.error.issues[0]!.message, 422);
 
   const { admissionNo, phone } = parsed.data;
-  const normalizedPhone = phone.replace(/[\s-]/g, "");
+  // Canonical form (0-prefix) so "+233241234567" and "0241234567" match the
+  // same stored number.
+  const canonical = (p: string) => p.replace(/[\s-]/g, "").replace(/^\+?233/, "0");
+  const normalizedPhone = canonical(phone);
 
   // Find the student — admission number alone must NOT reveal anything
   const student = await prisma.student.findUnique({ where: { admissionNo: admissionNo.toUpperCase() } });
@@ -28,7 +31,7 @@ export const POST = handle(async (req) => {
     throw new ApiError("We could not send a code. Please verify your details with the school office.", 404);
   };
   if (!student || !student.phone) return notFound();
-  if (student.phone.replace(/[\s-]/g, "") !== normalizedPhone) return notFound();
+  if (canonical(student.phone) !== normalizedPhone) return notFound();
 
   // Rate limit per student as well
   rateLimit(`otp:student:${student.id}`, 5, 300_000);

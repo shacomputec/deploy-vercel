@@ -1,4 +1,4 @@
-// Kaya AI assistant — provider-agnostic. AI_MODE=offline (default) ships a
+// shacomputec AI assistant — provider-agnostic. AI_MODE=offline (default) ships a
 // built-in, offline assistant that answers in the user's chosen Ghanaian
 // language. Set AI_MODE=openai + OPENAI_API_KEY for a real LLM.
 //
@@ -68,12 +68,12 @@ type ReplyTable = Partial<Record<LanguageCode, string>>;
 
 const REPLIES: Record<AiIntent, ReplyTable> = {
   greeting: {
-    en: "Hello! 👋 I'm Kaya AI. I can help with lesson planning, report-card comments, schemes of learning, timetable tips, admissions, fees and results. What would you like to know?",
-    tw: "Hello! 👋 Mene Kaya AI. Metumi aboa wo adesua nhyehyɛe, report nsusuiɛ, schemes of learning, timetable, admissions, ka ne nsusui hwɛ. Dɛn na wopɛ sɛ wohu?",
-    ee: "Hello! 👋 Nye Kaya AI. Mate ŋu akpe ɖe ŋuwò le nufiafia, ƒoƒoɖoɖo ŋɔŋlɔ, nusɔsrɔ̃ dɔdokuiwo, timetable, suku yiyi, gawo kple ƒoƒoɖoɖo ŋu. Nu ka ŋu nèle vevie?",
-    ga: "Hello! 👋 Mi ji Kaya AI. Mi baanyɛ ye mi bua o yɛ nitsumɔ shishitoo, hewalɛ wolo, schemes, timetable, skul nyɛɛmɔ, fii kɛ hewalɛ kwɛmɔ. Mɛni o tao ni a kwɛ?",
-    ha: "Sannu! 👋 Ni Kaya AI ne. Zan iya taimaka da shirin darasi, sharhin sakamako, manhaja, timetable, shiga makaranta, kuɗi da sakamako. Me kake so ka sani?",
-    dag: "Hello! 👋 N nyɛla Kaya AI. N ni tooi sɔŋ a bɔhimbu yaɣa, bunahi sabbu, bɔhimbu, timetable, shikuru kpɛbu, liɣiri mini bunahi. Bo ka a bɔra ni a baŋ?",
+    en: "Hello! 👋 I'm shacomputec AI. I can help with lesson planning, report-card comments, schemes of learning, timetable tips, admissions, fees and results. What would you like to know?",
+    tw: "Hello! 👋 Mene shacomputec AI. Metumi aboa wo adesua nhyehyɛe, report nsusuiɛ, schemes of learning, timetable, admissions, ka ne nsusui hwɛ. Dɛn na wopɛ sɛ wohu?",
+    ee: "Hello! 👋 Nye shacomputec AI. Mate ŋu akpe ɖe ŋuwò le nufiafia, ƒoƒoɖoɖo ŋɔŋlɔ, nusɔsrɔ̃ dɔdokuiwo, timetable, suku yiyi, gawo kple ƒoƒoɖoɖo ŋu. Nu ka ŋu nèle vevie?",
+    ga: "Hello! 👋 Mi ji shacomputec AI. Mi baanyɛ ye mi bua o yɛ nitsumɔ shishitoo, hewalɛ wolo, schemes, timetable, skul nyɛɛmɔ, fii kɛ hewalɛ kwɛmɔ. Mɛni o tao ni a kwɛ?",
+    ha: "Sannu! 👋 Ni shacomputec AI ne. Zan iya taimaka da shirin darasi, sharhin sakamako, manhaja, timetable, shiga makaranta, kuɗi da sakamako. Me kake so ka sani?",
+    dag: "Hello! 👋 N nyɛla shacomputec AI. N ni tooi sɔŋ a bɔhimbu yaɣa, bunahi sabbu, bɔhimbu, timetable, shikuru kpɛbu, liɣiri mini bunahi. Bo ka a bɔra ni a baŋ?",
   },
   lesson: {
     en: "Here is a suggested lesson-plan structure (NaCCA SBC format):\n1. Strand / Sub-strand — from the syllabus for your level.\n2. Content Standard & Indicator — what learners must know.\n3. Lesson Objectives (2–3) — start with “By the end of the lesson, learners will be able to…”\n4. Core Competencies — Critical Thinking, Creativity, Communication.\n5. TLMs — charts, counters, real objects.\n6. Activities — starter (5 min), main (30 min), plenary (10 min).\n7. Assessment & Differentiation.\nTell me the subject and level and I can draft a full lesson note.",
@@ -172,7 +172,7 @@ export async function chat(
           messages: [
             {
               role: "system",
-              content: `You are Kaya AI, the helpful assistant for ${ctx.schoolName}, a GES school. Answer in the user's language (language code: ${lang}). Be friendly, concise and practical for school staff, parents and students in Ghana. Never reveal licensing or activation secrets.`,
+              content: `You are shacomputec AI, the helpful assistant for ${ctx.schoolName}, a GES school. Answer in the user's language (language code: ${lang}). Be friendly, concise and practical for school staff, parents and students in Ghana. Never reveal licensing or activation secrets.`,
             },
             ...messages.slice(-10),
           ],

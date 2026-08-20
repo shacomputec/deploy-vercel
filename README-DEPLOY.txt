@@ -71,6 +71,18 @@ MANDATORY ENVIRONMENT VARIABLES (Settings → Environment Variables)
   Optional: RESEND_API_KEY (email receipts/OTPs), SEED_PAYSTACK_* and
   SEED_MOMO_* (your collection keys), TWILIO_* (WhatsApp), HUBTEL_* (SMS).
 
+UPDATING THE LIVE SITE (no GitHub)
+  This folder is a COPY of the main project. After you change code in the
+  main project, refresh the copy and redeploy:
+    1. Copy changed folders into this one:
+         robocopy src deploy-vercel/src /E
+         copy prisma\schema.prisma deploy-vercel\prisma\
+         robocopy public deploy-vercel\public /E
+    2. Deploy:
+         cd deploy-vercel
+         npx vercel --prod
+  (The one-time DB setup from step 2 never needs repeating.)
+
 AFTER DEPLOY
   - Open your live link → sign in with username "shacomputec" (or your
     SEED_ADMIN_EMAIL) + SEED_ADMIN_PASSWORD.

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Field, Input, Select } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { PageHeader } from "@/components/admin/page-header";
+import { PhoneField } from "@/components/admin/validated-field";
 import { useToast } from "@/components/ui/toast";
 
 type Item = {
@@ -330,7 +331,7 @@ export default function InventoryPage() {
           <Field label="Supplier name *"><Input required value={supplierForm.name} onChange={(e) => setSupplierForm({ ...supplierForm, name: e.target.value })} /></Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Contact person"><Input value={supplierForm.contact} onChange={(e) => setSupplierForm({ ...supplierForm, contact: e.target.value })} /></Field>
-            <Field label="Phone"><Input value={supplierForm.phone} onChange={(e) => setSupplierForm({ ...supplierForm, phone: e.target.value })} /></Field>
+            <PhoneField value={supplierForm.phone} onChange={(v) => setSupplierForm({ ...supplierForm, phone: v })} />
           </div>
           <Field label="Category">
             <Select value={supplierForm.category} onChange={(e) => setSupplierForm({ ...supplierForm, category: e.target.value })}>

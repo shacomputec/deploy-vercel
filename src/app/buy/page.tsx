@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { getSchool } from "@/lib/school";
 import { getLicenseConfig } from "@/lib/license";
-import { BuyNowCheckout } from "@/components/site/buy-now-checkout";
+import { BuyNowCheckout, PlanButton, type BuyPlan } from "@/components/site/buy-now-checkout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Buy this system" };
@@ -65,6 +65,62 @@ export default async function BuyPage() {
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-2 ring-1 ring-white/10"><Globe className="h-3.5 w-3.5 text-emerald-300" /> School website</span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-2 ring-1 ring-white/10"><MonitorSmartphone className="h-3.5 w-3.5 text-emerald-300" /> Windows app</span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-2 ring-1 ring-white/10"><Smartphone className="h-3.5 w-3.5 text-emerald-300" /> Android app</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Subscription plans */}
+      <section className="container-x py-16">
+        <div className="mb-10 max-w-2xl">
+          <p className="section-kicker text-primary">Subscription plans</p>
+          <h2 className="mt-2 text-3xl font-bold text-ink">Simple monthly &amp; yearly plans</h2>
+          <p className="mt-3 text-[15px] text-slate-600">
+            Pay as you go, in Ghana cedis. Each plan hosts one or more school profiles —
+            Primary/JHS and Senior High — on one live database. When your subscription
+            period ends, the system locks automatically until you renew.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-3">
+          {(
+            [
+              { id: "1m" as const, dur: "1 month", price: 250, schoolCount: 1, detail: "Primary / JHS only", featured: false },
+              { id: "12m" as const, dur: "12 months", price: 2800, schoolCount: 2, detail: "Primary, JHS and SHS", featured: true },
+              { id: "24m" as const, dur: "24 months", price: 4000, schoolCount: 3, detail: "Primary, JHS and SHS", featured: false },
+            ] as Array<{ id: BuyPlan["id"]; dur: string; price: number; schoolCount: number; detail: string; featured: boolean }>
+          ).map((p) => (
+            <div key={p.dur} className={`card relative p-6 ${p.featured ? "ring-2 ring-primary shadow-lg" : ""}`}>
+              {p.featured && (
+                <span className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">Most popular</span>
+              )}
+              <p className="text-sm font-bold uppercase tracking-widest text-slate-500">{p.dur}</p>
+              <p className="mt-3 text-4xl font-extrabold text-ink">GH₵{p.price.toLocaleString()}</p>
+              <p className="mt-1 text-xs text-slate-500">one-time payment · auto-lock at expiry</p>
+              <div className="mt-5 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5">
+                <Building2 className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm font-semibold text-emerald-800">{p.schoolCount} school{p.schoolCount > 1 ? "s" : ""} hosted</span>
+              </div>
+              <p className="mt-2 text-[13px] text-slate-600">{p.detail}</p>
+              <PlanButton featured={p.featured} plan={{ id: p.id, label: p.dur, amount: p.price, schools: p.schoolCount }} />
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 flex flex-col items-start gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <MessageSquare className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <div>
+              <p className="text-sm font-bold text-slate-900">Need more than 24 months or more than 3 schools?</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
+                Custom multi-school packages and longer terms are available — contact the developer for a tailored quote.
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-3">
+            <a href={DEV.whatsapp} target="_blank" rel="noopener noreferrer" className="btn-accent">
+              <MessageCircle className="h-4 w-4" /> WhatsApp {DEV.name}
+            </a>
+            <a href={`mailto:${DEV.email}`} className="btn-outline">
+              <Mail className="h-4 w-4" /> Email
+            </a>
           </div>
         </div>
       </section>

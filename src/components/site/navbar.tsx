@@ -30,6 +30,7 @@ const NAV: NavItem[] = [
   { href: "/events", label: "nav.events" },
   { href: "/admissions", label: "nav.admissions" },
   { href: "/buy", label: "nav.buy" },
+  { href: "/downloads", label: "nav.downloads" },
   { href: "/contact", label: "nav.contact" },
 ];
 

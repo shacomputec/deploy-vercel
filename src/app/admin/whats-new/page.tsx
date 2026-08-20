@@ -225,7 +225,7 @@ const ENTRIES: Entry[] = [
     title: "Speak your language + a fully self-contained Windows installer",
     items: [
       "Read the system in YOUR language: English stays the default, and you can now switch the whole interface to Asante Twi, Fante, Ewe, Ga, Dagbani, Hausa, Dagaare or Nzema — from the login screen, the website menu or the admin header. Your choice is remembered on every device you sign in from.",
-      "Kaya AI now answers in the language you picked — the built-in assistant understands questions in English AND in the Ghanaian languages (e.g. “bisa sukuu ka” in Twi) and replies in your chosen language. It works fully offline, so no AI key or plugin is ever needed.",
+      "shacomputec AI now answers in the language you picked — the built-in assistant understands questions in English AND in the Ghanaian languages (e.g. “bisa sukuu ka” in Twi) and replies in your chosen language. It works fully offline, so no AI key or plugin is ever needed.",
       "The Windows installer is now truly self-contained: Setup.exe bundles the web server, the Node runtime and the SQLite database. After one install there is nothing else to set up — no Node, no npm, no database server, no plugins. The school's data lives safely on its own computer and the server starts automatically at Windows sign-in.",
       "Trial-first onboarding: there is no demo mode — every installation starts a free trial automatically, and the developer (and only the developer) handles licensing and activation.",
     ],
