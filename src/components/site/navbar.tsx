@@ -63,7 +63,7 @@ export function SiteNavbar({ school }: { school: School | null }) {
                 <div className={cn("absolute left-0 top-full w-48 overflow-hidden rounded-xl border border-slate-200 bg-white pt-1 shadow-lift transition-all", aboutOpen ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0")}>
                   {item.children.map((c) => (
                     <Link key={c.href} href={c.href} className={cn("block px-4 py-2.5 text-sm text-slate-600 hover:bg-primary-soft hover:text-ink", isActive(c.href) && "text-ink font-semibold")}>
-                      {c.label}
+                      {t(c.label)}
                     </Link>
                   ))}
                 </div>
